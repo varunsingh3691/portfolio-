@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+    	http://www.springframework.org/schema/beans/spring-beans.xsd
+    	http://www.springframework.org/schema/context
+    	http://www.springframework.org/schema/context/spring-context.xsd
+    	http://www.springframework.org/schema/mvc 
+    	http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/tx
+    	http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+
+	<!-- Adding support for component scanning -->
+	<context:component-scan base-package="com.tap.springmvc" />
+
+	<!-- Adding support for conversion, formatting and validation support -->
+
+
+
+	<tx:annotation-driven />
+
+	<!-- Defining Spring MVC view resolver -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/view/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<!-- Enable serving of static resources -->
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+		
+
+	<mvc:annotation-driven />
+	
+	<!-- Data source bean -->
+	<bean
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource" name="ds">
+
+		<property name="driverClassName"
+				  value="com.mysql.cj.jdbc.Driver" />
+		<property name="url"
+				  value="jdbc:mysql://localhost:3306/portfoliodb" />
+		<property name="username" value="" />
+		<property name="password" value="" />
+
+	</bean>
+
+	<!-- creating a bean of loacalSessionFactoryBean and pass it to ref of sessionFactory -->
+	<bean
+		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean" name="factory">
+		<!-- inside this bean that is to LocalSessionFactoryBean we will pass 3 
+			more things -->
+
+		<!-- passing data source so we will create 1st data source bean above this 
+			bean -->
+		<property name="dataSource" ref="ds"></property>
+
+		<!-- next thing is hibernate properties we need to pass -->
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="hibernate.format_sql">true</prop>
+			</props>
+		</property>
+
+		<!-- next thing we will pass the class which is annotated in our case the 
+			annotated class is User.java -->
+		<property name="annotatedClasses">
+			<list>
+				<value>
+					com.tap.springmvc.model.User
+				</value>
+			</list>
+		</property>
+
+	</bean>
+
+	<!-- another bean/object created of hibernate template as we are passing 
+		it through ref to userDao -->
+	<bean class="org.springframework.orm.hibernate5.HibernateTemplate"
+		name="hibernateTemplate">
+		<property name="sessionFactory" ref="factory"></property>
+
+	</bean>
+
+	<bean
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager"
+		name="transactionManager">
+		<property name="sessionFactory" ref="factory"></property>
+	</bean>
+
+</beans>

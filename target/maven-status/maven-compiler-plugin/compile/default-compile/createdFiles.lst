@@ -1,0 +1,5 @@
+com\tap\springmvc\controller\MainController.class
+com\tap\springmvc\model\User.class
+com\tap\springmvc\dao\UserDao.class
+com\tap\springmvc\dao\UserDaoImpl.class
+com\tap\springmvc\listeners\MyServletContextListener.class
